@@ -67,20 +67,20 @@ class Performance(BaseModel):
 
         if time_delta is None:
             # Calculate CPM using all function times
-            return round(len(function_times) / (len(function_times) / 60), 1)
+            return len(function_times) / (len(function_times) / 60)
 
         # Find the oldest entry
         oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
 
         if time_delta >= datetime.utcnow() - oldest_entry.timestamp:
             # Calculate CPM using all function times
-            return round(len(function_times) / (len(function_times) / 60), 1)
+            return len(function_times) / (len(function_times) / 60)
 
         # Filter function times based on the provided time delta
         recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.utcnow() - time_delta]
         if not recent_calls:
             return 0.0
-        return round(len(recent_calls) / (time_delta.total_seconds() / 60), 1)
+        return len(recent_calls) / (time_delta.total_seconds() / 60)
 
     def avg_time(self, func: t.Callable[..., t.Any] | str, time_delta: timedelta = None) -> float:
         """Get the average execution time of a function
@@ -98,29 +98,29 @@ class Performance(BaseModel):
             return 0.0
         if time_delta is None:
             # Calculate average execution time of all entries
-            return round(sum(i.exe_time for i in function_times) / len(function_times), 1)
+            return sum(i.exe_time for i in function_times) / len(function_times)
 
         # Find the oldest entry
         oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
         if time_delta >= datetime.utcnow() - oldest_entry.timestamp:
             # Calculate average execution time of all entries
-            return round(sum(i.exe_time for i in function_times) / len(function_times), 1)
+            return sum(i.exe_time for i in function_times) / len(function_times)
 
         recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.utcnow() - time_delta]
         if not recent_calls:
             return 0.0
-        return round(sum(i.exe_time for i in recent_calls) / len(recent_calls), 1)
+        return sum(i.exe_time for i in recent_calls) / len(recent_calls)
 
 
 _perf = Performance()
 
 
-def perf(max_entries: int = None):
+def perf(max_entries: int = 100):
     """Decorator to measure and record the execution time of a function.
 
     Args:
         max_entries (int, optional): The maximum number of execution time records to keep for the function.
-                                      Older records are discarded. Defaults to None, meaning all records are kept.
+                                      Older records are discarded. Defaults to 100, meaning only 100 records are kept.
 
     Returns:
         function: The decorated function.
@@ -132,7 +132,7 @@ def perf(max_entries: int = None):
             start_time = perf_counter()
             result = func(*args, **kwargs)
             end_time = perf_counter()
-            delta_ms = round((end_time - start_time) * 1000, 1)
+            delta_ms = (end_time - start_time) * 1000
 
             global _perf
             _perf.add(func, delta_ms, max_entries)
