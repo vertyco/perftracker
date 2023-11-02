@@ -68,6 +68,8 @@ class Performance(BaseModel):
         if time_delta is None:
             # Calculate CPM using all function times
             time_span = (function_times[-1].timestamp - function_times[0].timestamp).total_seconds() / 60
+            if not time_span:
+                return 0.0
             return len(function_times) / time_span
 
         # Find the oldest entry
@@ -76,6 +78,8 @@ class Performance(BaseModel):
         if time_delta >= datetime.utcnow() - oldest_entry.timestamp:
             # Calculate CPM using all function times
             time_span = (function_times[-1].timestamp - function_times[0].timestamp).total_seconds() / 60
+            if not time_span:
+                return 0.0
             return len(function_times) / time_span
 
         # Filter function times based on the provided time delta
@@ -83,6 +87,8 @@ class Performance(BaseModel):
         if not recent_calls:
             return 0.0
         time_span = (recent_calls[-1].timestamp - recent_calls[0].timestamp).total_seconds() / 60
+        if not time_span:
+            return 0.0
         return len(recent_calls) / time_span
 
     def avg_time(self, func: t.Callable[..., t.Any] | str, time_delta: timedelta = None) -> float:
