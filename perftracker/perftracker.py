@@ -67,20 +67,23 @@ class Performance(BaseModel):
 
         if time_delta is None:
             # Calculate CPM using all function times
-            return len(function_times) / (len(function_times) / 60)
+            time_span = (function_times[-1].timestamp - function_times[0].timestamp).total_seconds() / 60
+            return len(function_times) / time_span
 
         # Find the oldest entry
         oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
 
         if time_delta >= datetime.utcnow() - oldest_entry.timestamp:
             # Calculate CPM using all function times
-            return len(function_times) / (len(function_times) / 60)
+            time_span = (function_times[-1].timestamp - function_times[0].timestamp).total_seconds() / 60
+            return len(function_times) / time_span
 
         # Filter function times based on the provided time delta
         recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.utcnow() - time_delta]
         if not recent_calls:
             return 0.0
-        return len(recent_calls) / (time_delta.total_seconds() / 60)
+        time_span = (recent_calls[-1].timestamp - recent_calls[0].timestamp).total_seconds() / 60
+        return len(recent_calls) / time_span
 
     def avg_time(self, func: t.Callable[..., t.Any] | str, time_delta: timedelta = None) -> float:
         """Get the average execution time of a function

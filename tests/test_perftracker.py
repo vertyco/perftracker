@@ -37,26 +37,41 @@ def test_get():
 
 def test_cpm():
     perf = Performance()
-    perf.add("test_func", 0)
+    for _ in range(10):
+        perf.add("test_func", 0)
+        sleep(0.1)
+    assert 600 <= perf.cpm("test_func") <= 700
+    assert 600 <= perf.cpm("test_func", timedelta(seconds=1)) <= 700
+    assert 600 <= perf.cpm("test_func", timedelta(minutes=1)) <= 700
     sleep(1)
-    perf.add("test_func", 0)
-    assert perf.cpm("test_func") == 60
+    assert perf.cpm("test_func", timedelta(seconds=0.1)) == 0.0
 
 
-def test_cpm_with_time_delta():
+def test_avg_time():
     perf = Performance()
-    perf.add("test_func", 0)
-    sleep(1)
-    perf.add("test_func", 0)
-    assert perf.cpm("test_func", timedelta(seconds=1)) == 60
+    # Add 5 function calls with execution times from 1 to 5 milliseconds
+    for i in range(1, 6):
+        perf.add("test_func", i)
+    # The average time should be 3.0 ms
+    assert perf.avg_time("test_func") == 3.0
 
 
-def test_cpm_with_large_time_delta():
+def test_avg_time_no_calls():
     perf = Performance()
-    perf.add("test_func", 0)
+    # No function calls were added, so the average time should be 0.0 ms
+    assert perf.avg_time("test_func") == 0.0
+
+
+def test_avg_time_with_time_delta():
+    perf = Performance()
+    # Add 5 function calls with execution times from 1 to 5 milliseconds
+    for i in range(1, 6):
+        perf.add("test_func", i)
+        sleep(0.3)
+    assert perf.avg_time("test_func", timedelta(minutes=1)) == 3
+    assert perf.avg_time("test_func", timedelta(seconds=1)) == 4
     sleep(1)
-    perf.add("test_func", 0)
-    assert perf.cpm("test_func", timedelta(minutes=1)) == 60
+    assert perf.avg_time("test_func", timedelta(seconds=1)) == 0.0
 
 
 @perf()
