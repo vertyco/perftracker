@@ -78,7 +78,38 @@ class Performance(BaseModel):
 
         # Filter function times based on the provided time delta
         recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.utcnow() - time_delta]
+        if not recent_calls:
+            return 0.0
         return round(len(recent_calls) / (time_delta.total_seconds() / 60), 1)
+
+    def avg_time(self, func: t.Callable[..., t.Any] | str, time_delta: timedelta = None) -> float:
+        """Get the average execution time of a function
+
+        Args:
+            func (t.Callable[..., t.Any] | str): function or the module.name of the function.
+            time_delta (timedelta, optional): Timespan of data to use. Defaults to None.
+
+        Returns:
+            float: average time the function takes to execute in milliseconds
+        """
+        key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
+        function_times = self.get(key)
+        if not function_times:
+            return 0.0
+        if time_delta is None:
+            # Calculate average execution time of all entries
+            return round(sum(i.exe_time for i in function_times) / len(function_times), 1)
+
+        # Find the oldest entry
+        oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
+        if time_delta >= datetime.utcnow() - oldest_entry.timestamp:
+            # Calculate average execution time of all entries
+            return round(sum(i.exe_time for i in function_times) / len(function_times), 1)
+
+        recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.utcnow() - time_delta]
+        if not recent_calls:
+            return 0.0
+        return round(sum(i.exe_time for i in recent_calls) / len(recent_calls), 1)
 
 
 _perf = Performance()

@@ -35,9 +35,10 @@ stats = get_stats()
 
 - `perf(max_entries=None)`: A decorator to measure and record the execution time of a function. If `max_entries` is set, it will limit the number of records kept for the function to this value.
 - `get_stats()`: Returns the current Performance instance, which contains all recorded performance data.
-- `Performance.add(function_name, exe_time, max_entries=None)`: Adds an execution time record for a function.
-- `Performance.get(function_name)`: Returns the execution time records for a function.
-- `Performance.cpm(function_name, time_delta)`: Calculates the average calls per minute (CPM) of a function over a certain period.
+- `Performance.add(function, exe_time, max_entries=None)`: Adds an execution time record for a function.
+- `Performance.get(function)`: Returns the execution time records for a function.
+- `Performance.cpm(function, time_delta)`: Calculates the average calls per minute (CPM) of a function over a certain period.
+- `Performance.avg_tme(function, time_delta)`: Calculate the average time a function takes to execute over a certain period.
 
 ## Contributing
 

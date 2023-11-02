@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="perftracker",
-    version="0.2.0",
+    version="1.0.0",
     url="https://github.com/vertyco/perftracker",
     author="Alex Goble",
     author_email="alex.c.goble@gmail.com",
