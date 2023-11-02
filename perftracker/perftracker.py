@@ -1,4 +1,6 @@
+"""A Python performance tracking package"""
 import logging
+import typing as t
 from datetime import datetime, timedelta
 from functools import wraps
 from time import perf_counter
@@ -16,44 +18,50 @@ class FTime(BaseModel):
 class Performance(BaseModel):
     function_times: dict[str, list[FTime]] = {}
 
-    def add(self, function_name: str, exe_time: float, max_entries: int = None) -> None:
+    def add(self, func: t.Callable[..., t.Any] | str, exe_time: float, max_entries: int = None) -> None:
         """Add a function execution time record.
 
         Args:
-            function_name (str): The name of the function.
+            func (t.Callable[..., t.Any] | str): function or the module.name of the function.
             exe_time (float): The execution time of the function in milliseconds.
             max_entries (int, optional): The maximum number of records to keep for the function.
                                           Older records are discarded. Defaults to None, meaning all records are kept.
         """
-        if function_name not in self.function_times:
-            self.function_times[function_name] = []
-        ftime = FTime(exe_time=exe_time, timestamp=datetime.utcnow())
-        self.function_times[function_name].append(ftime)
-        if max_entries:
-            self.function_times[function_name] = self.function_times[function_name][-max_entries:]
+        key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
 
-    def get(self, function_name: str) -> list[FTime] | None:
+        if key not in self.function_times:
+            self.function_times[key] = []
+
+        ftime = FTime(exe_time=exe_time, timestamp=datetime.utcnow())
+        self.function_times[key].append(ftime)
+
+        if max_entries:
+            self.function_times[key] = self.function_times[key][-max_entries:]
+
+    def get(self, func: t.Callable[..., t.Any] | str) -> list[FTime] | None:
         """Get the execution time records of a function.
 
         Args:
-            function_name (str): The name of the function.
+            func (t.Callable[..., t.Any] | str): function or the module.name of the function.
 
         Returns:
             list[FTime] | None: A list of execution time records, or None if no records exist for the function.
         """
-        return self.function_times.get(function_name)
+        key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
+        return self.function_times.get(key)
 
-    def cpm(self, function_name: str, time_delta: timedelta = None) -> float:
+    def cpm(self, func: t.Callable[..., t.Any] | str, time_delta: timedelta = None) -> float:
         """Get the "calls per minute" of a function.
 
         Args:
-            function_name (str): Name of the function.
+            func (t.Callable[..., t.Any] | str): function or the module.name of the function.
             time_delta (timedelta, optional): Timespan of data to use. Defaults to None.
 
         Returns:
             float: Calls per minute for the given function.
         """
-        function_times = self.get(function_name)
+        key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
+        function_times = self.get(key)
         if not function_times:
             return 0.0
 
@@ -87,7 +95,7 @@ def perf(max_entries: int = None):
         function: The decorated function.
     """
 
-    def decorator(func):
+    def decorator(func: t.Callable[..., t.Any]):
         @wraps(func)
         def wrapper(*args, **kwargs):
             start_time = perf_counter()
@@ -96,9 +104,9 @@ def perf(max_entries: int = None):
             delta_ms = round((end_time - start_time) * 1000, 1)
 
             global _perf
-            _perf.add(func.__name__, delta_ms, max_entries)
+            _perf.add(func, delta_ms, max_entries)
 
-            _log.debug(f"{func.__name__} took {delta_ms}ms to complete.")
+            _log.debug(f"{func.__module__}.{func.__name__} took {delta_ms}ms to complete.")
             return result
 
         return wrapper

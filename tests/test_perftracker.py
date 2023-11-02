@@ -1,22 +1,75 @@
-import time
-from datetime import timedelta
+from datetime import datetime, timedelta
+from time import sleep
 
-from perftracker import get_stats, perf
+from perftracker import FTime, Performance, get_stats, perf
 
 
-def test_perf_decorator():
-    @perf()
-    def test_func():
-        time.sleep(0.1)  # Sleep for 100ms
+def test_ftime():
+    ftime = FTime(exe_time=10.0, timestamp=datetime.utcnow())
+    assert ftime.exe_time == 10.0
+    assert isinstance(ftime.timestamp, datetime)
 
-    test_func()
 
+def test_add():
+    perf = Performance()
+    perf.add("test_func", 10.0)
+    assert "test_func" in perf.function_times
+    assert len(perf.function_times["test_func"]) == 1
+    assert perf.function_times["test_func"][0].exe_time == 10.0
+
+
+def test_add_with_max_entries():
+    perf = Performance()
+    for i in range(10):
+        perf.add("test_func", i, max_entries=5)
+    assert len(perf.function_times["test_func"]) == 5
+    assert perf.function_times["test_func"][0].exe_time == 5.0
+
+
+def test_get():
+    perf = Performance()
+    perf.add("test_func", 10.0)
+    assert perf is not None
+    assert len(perf.get("test_func")) == 1
+    if p := perf.get("test_func"):
+        assert p[0].exe_time == 10.0
+
+
+def test_cpm():
+    perf = Performance()
+    perf.add("test_func", 0)
+    sleep(1)
+    perf.add("test_func", 0)
+    assert perf.cpm("test_func") == 60
+
+
+def test_cpm_with_time_delta():
+    perf = Performance()
+    perf.add("test_func", 0)
+    sleep(1)
+    perf.add("test_func", 0)
+    assert perf.cpm("test_func", timedelta(seconds=1)) == 60
+
+
+def test_cpm_with_large_time_delta():
+    perf = Performance()
+    perf.add("test_func", 0)
+    sleep(1)
+    perf.add("test_func", 0)
+    assert perf.cpm("test_func", timedelta(minutes=1)) == 60
+
+
+@perf()
+def test_func():
+    sleep(0.01)
+
+
+def test_perf():
     stats = get_stats()
-    function_times = stats.get("test_func")
-
-    assert function_times is not None
-    assert len(function_times) == 1
-    assert 100 <= function_times[0].exe_time <= 150  # Allow some leeway
+    stats.function_times.clear()
+    test_func()
+    assert "test_perftracker.test_func" in stats.function_times
+    assert len(stats.get("test_perftracker.test_func")) == 1
 
 
 def test_max_entries():
@@ -29,34 +82,11 @@ def test_max_entries():
     test_func()  # This should evict the first entry
 
     stats = get_stats()
-    function_times = stats.get("test_func")
+    function_times = stats.get(test_func)
 
     assert len(function_times) == 2
 
 
-def test_cpm():
-    @perf()
-    def test_func():
-        pass
-
-    # Call the function twice
-    test_func()
-    time.sleep(1)  # Sleep for 1 second
-    test_func()
-
+def test_null_cpm():
     stats = get_stats()
-
-    # Test against all entries
-    cpm = stats.cpm("test_func", time_delta=None)
-    assert cpm == 60
-
-    # Test against delta
-    cpm = stats.cpm("test_func", timedelta(seconds=1))
-    assert cpm == 60
-
-    # Test against overly large delta
-    cpm = stats.cpm("test_func", timedelta(days=1))
-    assert cpm == 60
-
-    # Test when function doesnt exist yet
-    assert stats.cpm("non-existant-function") == 0.0
+    assert stats.cpm("test") == 0.0
