@@ -1,11 +1,13 @@
 from setuptools import find_packages, setup
 
+from perftracker import __version__
+
 with open("README.md", "r", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="perftracker",
-    version="1.2.0",
+    version=__version__,
     url="https://github.com/vertyco/perftracker",
     author="vertyco",
     author_email="alex.c.goble@gmail.com",
