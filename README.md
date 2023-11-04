@@ -164,7 +164,7 @@ class MyCog(commands.Cog):
         stats = get_stats()
         records = stats.get(self.slow_function)
         if records:
-            avg_time = stats.avg_time(f"{self.__class__.__module__}.{function_name}")
+            avg_time = stats.avg_time(self.slow_function)
             await ctx.send(f"Average execution time for {function_name}: {avg_time}ms")
         else:
             await ctx.send(f"No performance records found for {function_name}")
