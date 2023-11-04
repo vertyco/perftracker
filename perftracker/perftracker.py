@@ -30,15 +30,21 @@ import typing
 _log = logging.getLogger("perftracker")
 
 
-class FTime:
+class Record:
     def __init__(self, exe_time: float, timestamp: datetime.datetime) -> None:
         self.exe_time = exe_time  # Milliseconds
         self.timestamp = timestamp  # UTC
 
+    def __str__(self):
+        return f"{round(self.exe_time, 4)}ms @ {self.timestamp} UTC"
+
 
 class Performance:
     def __init__(self) -> None:
-        self.function_times: dict[str, list[FTime]] = {}
+        self.function_times: dict[str, list[Record]] = {}
+
+    def __str__(self):
+        return f"{len(self.function_times)} functions currently tracked"
 
     def add(self, func: typing.Callable[..., typing.Any] | str, exe_time: float, max_entries: int = None) -> None:
         """Add a function execution time record.
@@ -54,20 +60,20 @@ class Performance:
         if key not in self.function_times:
             self.function_times[key] = []
 
-        ftime = FTime(exe_time=exe_time, timestamp=datetime.datetime.utcnow())
-        self.function_times[key].append(ftime)
+        record = Record(exe_time=exe_time, timestamp=datetime.datetime.utcnow())
+        self.function_times[key].append(record)
 
         if max_entries:
             self.function_times[key] = self.function_times[key][-max_entries:]
 
-    def get(self, func: typing.Callable[..., typing.Any] | str) -> list[FTime] | None:
+    def get(self, func: typing.Callable[..., typing.Any] | str) -> list[Record] | None:
         """Get the execution time records of a function.
 
         Args:
             func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
 
         Returns:
-            list[FTime] | None: A list of execution time records, or None if no records exist for the function.
+            list[Record] | None: A list of execution time records, or None if no records exist for the function.
         """
         key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
         return self.function_times.get(key)
@@ -95,7 +101,7 @@ class Performance:
             return len(function_times) / time_span
 
         # Find the oldest entry
-        oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
+        oldest_entry = min(function_times, key=lambda record: record.timestamp)
 
         if time_delta >= datetime.datetime.utcnow() - oldest_entry.timestamp:
             # Calculate CPM using all function times
@@ -105,7 +111,9 @@ class Performance:
             return len(function_times) / time_span
 
         # Filter function times based on the provided time delta
-        recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.datetime.utcnow() - time_delta]
+        recent_calls = [
+            record for record in function_times if record.timestamp >= datetime.datetime.utcnow() - time_delta
+        ]
         if not recent_calls:
             return 0.0
         time_span = (recent_calls[-1].timestamp - recent_calls[0].timestamp).total_seconds() / 60
@@ -113,12 +121,18 @@ class Performance:
             return 0.0
         return len(recent_calls) / time_span
 
-    def avg_time(self, func: typing.Callable[..., typing.Any] | str, time_delta: datetime.timedelta = None) -> float:
+    def avg_time(
+        self,
+        func: typing.Callable[..., typing.Any] | str,
+        time_delta: datetime.timedelta = None,
+        in_seconds: bool = False,
+    ) -> float:
         """Get the average execution time of a function
 
         Args:
             func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
             time_delta (datetime.timedelta, optional): Timespan of data to use. Defaults to None.
+            in_seconds (bool, optional): Return seconds instead of milliseconds, defaults to False
 
         Returns:
             float: average time the function takes to execute in milliseconds
@@ -129,18 +143,23 @@ class Performance:
             return 0.0
         if time_delta is None:
             # Calculate average execution time of all entries
-            return sum(i.exe_time for i in function_times) / len(function_times)
+            avg = sum(i.exe_time for i in function_times) / len(function_times)
+            return avg / 1000 if in_seconds else avg
 
         # Find the oldest entry
-        oldest_entry = min(function_times, key=lambda ftime: ftime.timestamp)
+        oldest_entry = min(function_times, key=lambda record: record.timestamp)
         if time_delta >= datetime.datetime.utcnow() - oldest_entry.timestamp:
             # Calculate average execution time of all entries
-            return sum(i.exe_time for i in function_times) / len(function_times)
+            avg = sum(i.exe_time for i in function_times) / len(function_times)
+            return avg / 1000 if in_seconds else avg
 
-        recent_calls = [ftime for ftime in function_times if ftime.timestamp >= datetime.datetime.utcnow() - time_delta]
+        recent_calls = [
+            record for record in function_times if record.timestamp >= datetime.datetime.utcnow() - time_delta
+        ]
         if not recent_calls:
             return 0.0
-        return sum(i.exe_time for i in recent_calls) / len(recent_calls)
+        avg = sum(i.exe_time for i in recent_calls) / len(recent_calls)
+        return avg / 1000 if in_seconds else avg
 
 
 _perf = Performance()

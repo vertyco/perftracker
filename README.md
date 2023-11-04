@@ -130,7 +130,7 @@ for _ in range(10):
 # Get performance statistics
 stats = get_stats()
 
-# Get a list of FTime objects (FTime represents when a function was called)
+# Get a list of Record objects (Record represents when a function was called)
 records = stats.get(my_function)
 
 # Get first time the function was called
@@ -146,7 +146,7 @@ timestamp = record.timestamp
 cpm = stats.cpm(my_function)
 
 # Average execution time (float)
-avg_exe_timne = stats.avg_time(my_function)
+avg_exe_time = stats.avg_time(my_function)
 ```
 
 ### Discord Bot Cog Usage

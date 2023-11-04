@@ -1,3 +1,3 @@
-from .perftracker import FTime, Performance, get_stats, perf
+from .perftracker import Performance, Record, get_stats, perf
 
-__all__ = ["FTime", "Performance", "get_stats", "perf"]
+__all__ = ["Record", "Performance", "get_stats", "perf"]

@@ -1,13 +1,15 @@
 import datetime
 import time
 
-from perftracker import FTime, Performance, get_stats, perf
+from perftracker import Performance, Record, get_stats, perf
 
 
-def test_ftime():
-    ftime = FTime(exe_time=10.0, timestamp=datetime.datetime.utcnow())
-    assert ftime.exe_time == 10.0
-    assert isinstance(ftime.timestamp, datetime.datetime)
+def test_record():
+    now = datetime.datetime.utcnow()
+    record = Record(exe_time=10.0, timestamp=now)
+    assert record.exe_time == 10.0
+    assert isinstance(record.timestamp, datetime.datetime)
+    assert str(record) == f"{round(record.exe_time, 4)}ms @ {record.timestamp} UTC"
 
 
 def test_add():
@@ -49,13 +51,13 @@ def test_cpm():
 
 def test_cpm_timespans():
     perf = Performance()
-    ftime = FTime(0, datetime.datetime.utcnow())
-    perf.function_times["test"] = [ftime, ftime]
+    record = Record(0, datetime.datetime.utcnow())
+    perf.function_times["test"] = [record, record]
     assert perf.cpm("test") == 0.0
     assert perf.cpm("test", datetime.timedelta(minutes=1)) == 0.0
-    perf.function_times["test"].append(FTime(0, datetime.datetime.utcnow()))
+    perf.function_times["test"].append(Record(0, datetime.datetime.utcnow()))
     time.sleep(0.1)
-    perf.function_times["test"].append(FTime(0, datetime.datetime.utcnow()))
+    perf.function_times["test"].append(Record(0, datetime.datetime.utcnow()))
     assert perf.cpm("test", datetime.timedelta(seconds=0.1)) == 0.0
 
 
@@ -97,6 +99,11 @@ def test_perf():
     test_func()
     assert "test_perftracker.test_func" in stats.function_times
     assert len(stats.get("test_perftracker.test_func")) == 1
+
+
+def test_perf_repr():
+    perf = Performance()
+    assert str(perf) == "0 functions currently tracked"
 
 
 def test_max_entries():
