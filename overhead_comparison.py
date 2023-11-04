@@ -58,7 +58,7 @@ def measure_overhead(func, iterations=100):
     plt.grid(True)
 
     # Save the plot
-    plt.savefig(".github/ASSETS/overhead_comparison.png")
+    plt.savefig(".github/ASSETS/overhead_comparison_test.png")
 
 
 # Test function

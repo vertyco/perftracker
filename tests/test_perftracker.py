@@ -1,11 +1,11 @@
-from datetime import datetime, timedelta
-from time import sleep
+import datetime
+import time
 
 from perftracker import FTime, Performance, get_stats, perf
 
 
 def test_ftime():
-    ftime = FTime(exe_time=10.0, timestamp=datetime.utcnow())
+    ftime = FTime(exe_time=10.0, timestamp=datetime.datetime.utcnow())
     assert ftime.exe_time == 10.0
     assert isinstance(ftime.timestamp, datetime)
 
@@ -39,12 +39,24 @@ def test_cpm():
     perf = Performance()
     for _ in range(10):
         perf.add("test_func", 0)
-        sleep(0.1)
+        time.sleep(0.1)
     assert 600 <= perf.cpm("test_func") <= 700
-    assert 600 <= perf.cpm("test_func", timedelta(seconds=1)) <= 700
-    assert 600 <= perf.cpm("test_func", timedelta(minutes=1)) <= 700
-    sleep(1)
-    assert perf.cpm("test_func", timedelta(seconds=0.1)) == 0.0
+    assert 600 <= perf.cpm("test_func", datetime.timedelta(seconds=1)) <= 700
+    assert 600 <= perf.cpm("test_func", datetime.timedelta(minutes=1)) <= 700
+    time.sleep(1)
+    assert perf.cpm("test_func", datetime.timedelta(seconds=0.1)) == 0.0
+
+
+def test_cpm_timespans():
+    perf = Performance()
+    ftime = FTime(0, datetime.datetime.utcnow())
+    perf.function_times["test"] = [ftime, ftime]
+    assert perf.cpm("test") == 0.0
+    assert perf.cpm("test", datetime.timedelta(minutes=1)) == 0.0
+    perf.function_times["test"].append(FTime(0, datetime.datetime.utcnow()))
+    time.sleep(0.1)
+    perf.function_times["test"].append(FTime(0, datetime.datetime.utcnow()))
+    assert perf.cpm("test", datetime.timedelta(seconds=0.1)) == 0.0
 
 
 def test_avg_time():
@@ -67,16 +79,16 @@ def test_avg_time_with_time_delta():
     # Add 5 function calls with execution times from 1 to 5 milliseconds
     for i in range(1, 6):
         perf.add("test_func", i)
-        sleep(0.3)
-    assert perf.avg_time("test_func", timedelta(minutes=1)) == 3
-    assert perf.avg_time("test_func", timedelta(seconds=1)) == 4
-    sleep(1)
-    assert perf.avg_time("test_func", timedelta(seconds=1)) == 0.0
+        time.sleep(0.3)
+    assert perf.avg_time("test_func", datetime.timedelta(minutes=1)) == 3
+    assert perf.avg_time("test_func", datetime.timedelta(seconds=1)) == 4
+    time.sleep(1)
+    assert perf.avg_time("test_func", datetime.timedelta(seconds=1)) == 0.0
 
 
 @perf()
 def test_func():
-    sleep(0.01)
+    time.sleep(0.01)
 
 
 def test_perf():

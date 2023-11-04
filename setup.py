@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="perftracker",
-    version="1.0.7",
+    version="1.1.0",
     url="https://github.com/vertyco/perftracker",
     author="vertyco",
     author_email="alex.c.goble@gmail.com",
@@ -13,7 +13,6 @@ setup(
     long_description_content_type="text/markdown",
     description="PerfTracker is a lightweight function performance monitoring framework",
     packages=find_packages(),
-    install_requires=["pydantic"],
     classifiers=[
         "Development Status :: 4 - Beta",
         "Intended Audience :: Developers",
