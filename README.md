@@ -104,7 +104,7 @@ def some_function():
     ...  # Some code that takes time...
 
     end_time = perf_counter()
-    delta = end_time - start_time
+    delta = (end_time - start_time) * 1000  # Use milliseconds
 
     # Add time manually, the 'add' method can take strings too
     stats.add("my_custom_function_key", delta)
