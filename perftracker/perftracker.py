@@ -146,7 +146,7 @@ def perf(max_entries: int = 100):
             global _perf
             _perf.add(func, delta_ms, max_entries)
 
-            _log.debug(f"{func.__module__}.{func.__name__} took {delta_ms}ms to complete.")
+            _log.debug(f"{func.__module__}.{func.__name__} took {round(delta_ms, 6)}ms to complete.")
             return result
 
         return wrapper

@@ -10,6 +10,11 @@ PerfTracker is a Python performance tracking package designed to assist develope
 - **Ease of Use**: Simply add a decorator to your functions.
 - **Flexibility**: Can be used without decorator for manual tracking.
 - **Detailed Statistics**: PerfTracker provides comprehensive statistics about your function's performance. It allows you to get the execution times and calculate the average calls per minute over a certain period. This information can be crucial in identifying bottlenecks in your code and optimizing it.
+- **Debug Logging**: Logs function execution deltas in real time.
+  ```
+  [09:48:58] DEBUG [perftracker] levelup.levelup.message_handler took 0.0017ms to complete.
+  [09:49:18] DEBUG [perftracker] levelup.levelup.save_cache took 0.001099ms to complete.
+  ```
 
 ## Disclaimer
 
