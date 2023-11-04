@@ -179,6 +179,14 @@ You can replace `slow_function` with any function in your bot that you want to t
 
 Please note that this example assumes you have basic knowledge of how to create and use cogs in a Discord bot. If you are unfamiliar with this, you can read the [Discord.py Cogs guide](https://discordpy.readthedocs.io/en/stable/ext/commands/cogs.html).
 
+## Performance Comparison
+
+PerfTracker is designed to have minimal overhead, allowing you to monitor your program's performance without significantly affecting its execution time. The following graph compares the overhead of PerfTracker with cProfile, another popular performance tracking package.
+
+![Performance Comparison](.github/ASSETS/overhead_comparison.png)
+
+As you can see, PerfTracker consistently has less overhead than cProfile, making it a more efficient choice for performance tracking in Python. The code used for this comparison can be found [Here](https://github.com/vertyco/perftracker/blob/master/overhead_comparison.py)
+
 ## Contributing
 
 We welcome contributions to PerfTracker. If you have a feature request, bug report, or want to improve the code, please feel free to submit a Pull Request.
