@@ -1,4 +1,4 @@
-"""A Python performance tracking package"""
+"""A lightweight performance tracking package"""
 import logging
 import typing as t
 from datetime import datetime, timedelta
