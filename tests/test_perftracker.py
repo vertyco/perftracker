@@ -7,7 +7,7 @@ from perftracker import FTime, Performance, get_stats, perf
 def test_ftime():
     ftime = FTime(exe_time=10.0, timestamp=datetime.datetime.utcnow())
     assert ftime.exe_time == 10.0
-    assert isinstance(ftime.timestamp, datetime)
+    assert isinstance(ftime.timestamp, datetime.datetime)
 
 
 def test_add():
