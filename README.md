@@ -191,7 +191,7 @@ PerfTracker is designed to have minimal overhead, allowing you to monitor your p
 
 ![Performance Comparison](https://github.com/vertyco/perftracker/blob/master/.github/ASSETS/overhead_comparison.png?raw=true)
 
-During this test, PerfTracker consistently has less overhead than cProfile, making it a more efficient choice for performance tracking in Python. The code used for this comparison can be found [Here](https://github.com/vertyco/perftracker/blob/master/overhead_comparison.py)
+During this test, PerfTracker consistently has less overhead than cProfile. The code used for this comparison can be found [Here](https://github.com/vertyco/perftracker/blob/master/overhead_comparison.py)
 
 ## Contributing
 
