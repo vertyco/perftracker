@@ -183,7 +183,7 @@ Please note that this example assumes you have basic knowledge of how to create 
 
 PerfTracker is designed to have minimal overhead, allowing you to monitor your program's performance without significantly affecting its execution time. The following graph compares the overhead of PerfTracker with cProfile, another popular performance tracking package.
 
-![Performance Comparison](.github/ASSETS/overhead_comparison.png)
+![Performance Comparison](https://github.com/vertyco/perftracker/blob/master/.github/ASSETS/overhead_comparison.png)
 
 During this test, PerfTracker consistently has less overhead than cProfile, making it a more efficient choice for performance tracking in Python. The code used for this comparison can be found [Here](https://github.com/vertyco/perftracker/blob/master/overhead_comparison.py)
 
