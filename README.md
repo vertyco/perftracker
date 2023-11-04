@@ -1,6 +1,6 @@
 # PerfTracker
 
-PerfTracker is a Python performance tracking package designed to assist developers in monitoring and tracking the execution time of their functions. It provides a straightforward and efficient way to measure function performance, enabling you to optimize your code effectively.
+PerfTracker is a erformance tracking package designed to assist developers in monitoring and tracking the execution time of their functions. It provides a straightforward and efficient way to measure function performance, enabling you to optimize your code effectively.
 
 [![badge](https://img.shields.io/pypi/v/perftracker)](https://pypi.org/project/perftracker/)
 [![badge](https://img.shields.io/pypi/dm/perftracker)](https://pypi.org/project/perftracker/)
@@ -24,7 +24,7 @@ of `module_name.function_name` to avoid interference when multiple packages use 
 
 ## Installation
 
-You can install PerfTracker using pip, the Python package installer. Run the following command in your terminal:
+To install PerfTracker using pip, Run the following command in your terminal:
 
 ```bash
 pip install perftracker
@@ -34,7 +34,7 @@ pip install perftracker
 
 PerfTracker provides several methods to track and retrieve function performance data:
 
-- `perf(max_entries=None)`: A decorator to measure and record the execution time of a function. If `max_entries` is set, it will limit the number of records kept for the function to this value.
+- `@perf(max_entries=None)`: A decorator to measure and record the execution time of a function. If `max_entries` is set, it will limit the number of records kept for the function to this value.
 - `get_stats()`: Returns the current Performance instance, which contains all recorded performance data.
 - `Performance.add(function, exe_time, max_entries=None)`: Adds an execution time record for a function. You can use this method to manually add execution time records.
 - `Performance.get(function)`: Returns the execution time records for a function. This can be useful if you want to analyze the performance data further.
@@ -171,7 +171,7 @@ class MyCog(commands.Cog):
         records = stats.get(self.slow_function)
         if records:
             avg_time = stats.avg_time(self.slow_function)
-            await ctx.send(f"Average execution time for {function_name}: {avg_time}ms")
+            await ctx.send(f"Average execution time for slow_function: {avg_time}ms")
         else:
             await ctx.send(f"No performance records found for {function_name}")
 
