@@ -41,16 +41,21 @@ class Record:
 
 class Performance:
     def __init__(self) -> None:
-        self.function_times: dict[str, list[Record]] = {}
+        self.function_times: typing.Dict[str, typing.List[Record]] = {}
 
     def __str__(self):
         return f"{len(self.function_times)} functions currently tracked"
 
-    def add(self, func: typing.Callable[..., typing.Any] | str, exe_time: float, max_entries: int = None) -> None:
+    def add(
+        self,
+        func: typing.Union[typing.Callable[..., typing.Any], str],
+        exe_time: float,
+        max_entries: int = None,
+    ) -> None:
         """Add a function execution time record.
 
         Args:
-            func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
+            func (typing.Union[typing.Callable[..., typing.Any], str]): function or the module.name of the function.
             exe_time (float): The execution time of the function in milliseconds.
             max_entries (int, optional): The maximum number of records to keep for the function.
                                           Older records are discarded. Defaults to None, meaning all records are kept.
@@ -66,23 +71,25 @@ class Performance:
         if max_entries:
             self.function_times[key] = self.function_times[key][-max_entries:]
 
-    def get(self, func: typing.Callable[..., typing.Any] | str) -> list[Record] | None:
+    def get(self, func: typing.Union[typing.Callable[..., typing.Any], str]) -> typing.Union[typing.List[Record], None]:
         """Get the execution time records of a function.
 
         Args:
-            func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
+            func (typing.Union[typing.Callable[..., typing.Any], str]): function or the module.name of the function.
 
         Returns:
-            list[Record] | None: A list of execution time records, or None if no records exist for the function.
+            typing.Union[typing.List[Record], None]: A typing.List of execution time records, or None if no records exist for the function.
         """
         key = func if isinstance(func, str) else f"{func.__module__}.{func.__name__}"
         return self.function_times.get(key)
 
-    def cpm(self, func: typing.Callable[..., typing.Any] | str, time_delta: datetime.timedelta = None) -> float:
+    def cpm(
+        self, func: typing.Union[typing.Callable[..., typing.Any], str], time_delta: datetime.timedelta = None
+    ) -> float:
         """Get the "calls per minute" of a function.
 
         Args:
-            func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
+            func (typing.Union[typing.Callable[..., typing.Any], str]): function or the module.name of the function.
             time_delta (datetime.timedelta, optional): Timespan of data to use. Defaults to None.
 
         Returns:
@@ -123,14 +130,14 @@ class Performance:
 
     def avg_time(
         self,
-        func: typing.Callable[..., typing.Any] | str,
+        func: typing.Union[typing.Callable[..., typing.Any], str],
         time_delta: datetime.timedelta = None,
         in_seconds: bool = False,
     ) -> float:
         """Get the average execution time of a function
 
         Args:
-            func (typing.Callable[..., typing.Any] | str): function or the module.name of the function.
+            func (typing.Union[typing.Callable[..., typing.Any], str]): function or the module.name of the function.
             time_delta (datetime.timedelta, optional): Timespan of data to use. Defaults to None.
             in_seconds (bool, optional): Return seconds instead of milliseconds, defaults to False
 
