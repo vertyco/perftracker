@@ -31,5 +31,5 @@ setup(
         "Typing :: Typed",
         "Natural Language :: English",
     ],
-    python_requires=">=3.10",
+    python_requires=">=3.9",
 )
