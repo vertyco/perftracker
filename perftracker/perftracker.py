@@ -172,12 +172,12 @@ class Performance:
 _perf = Performance()
 
 
-def perf(max_entries: int = 100):
+def perf(max_entries: int = 100000):
     """Decorator to measure and record the execution time of a function.
 
     Args:
         max_entries (int, optional): The maximum number of execution time records to keep for the function.
-                                      Older records are discarded. Defaults to 100, meaning only 100 records are kept.
+                                      Older records are discarded. Defaults to 100000, meaning only 100000 records are kept.
 
     Returns:
         function: The decorated function.

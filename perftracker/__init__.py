@@ -1,4 +1,4 @@
 from .perftracker import Performance, Record, get_stats, perf
 
 __all__ = ["Record", "Performance", "get_stats", "perf"]
-__version__ = "1.3.1"
+__version__ = "1.4.0"
