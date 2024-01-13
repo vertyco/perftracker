@@ -1,6 +1,6 @@
 # PerfTracker
 
-PerfTracker is a erformance tracking package designed to assist developers in monitoring and tracking the execution time of their functions. It provides a straightforward and efficient way to measure function performance, enabling you to optimize your code effectively.
+PerfTracker is a performance tracking package designed to assist developers in monitoring and tracking the execution time of their functions. It provides a straightforward and efficient way to measure function performance, enabling you to optimize your code effectively.
 
 [![badge](https://img.shields.io/pypi/v/perftracker)](https://pypi.org/project/perftracker/)
 [![badge](https://img.shields.io/pypi/dm/perftracker)](https://pypi.org/project/perftracker/)
